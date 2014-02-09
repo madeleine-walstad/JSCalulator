@@ -1,0 +1,23 @@
+/* 
+
+# - for div classes
+
+*/
+
+p {
+	font-family:"Courier New", Courier, monospace;
+	font-size:20px;
+	background-color:#E8E8E8;
+}
+
+
+button {
+	font-family:"Courier New", Courier, monospace;
+	font-size:20px;
+	
+}
+
+#number_buttons {
+	float:left;
+	font-size:25px;
+}	

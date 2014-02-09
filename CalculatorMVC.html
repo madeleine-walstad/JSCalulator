@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title> CALCULATOR </title>
+	<link rel="stylesheet" href="style_calculatorMVC.css">
+</head>
+
+<body>
+
+	<p id="type_space" class="type_space">0</p>
+	<p id="answer" class="type_space">= 0</p>
+
+	<div id="wrapper">		
+
+		
+			<div id="number_buttons">
+				<button type="button" id="button7"  onclick="myCalc_controller.number_click('7')">7</button>
+				<button type="button" id="button8"  onclick="myCalc_controller.number_click('8')">8</button>
+				<button type="button" id="button9"  onclick="myCalc_controller.number_click('9')">9</button>
+				<br>
+				<button type="button" id="button4"  onclick="myCalc_controller.number_click('4')">4</button>
+				<button type="button" id="button5"  onclick="myCalc_controller.number_click('5')">5</button>
+				<button type="button" id="button6"  onclick="myCalc_controller.number_click('6')">6</button>
+				<br>
+				<button type="button" id="button1"  onclick="myCalc_controller.number_click('1')">1</button>
+				<button type="button" id="button2"  onclick="myCalc_controller.number_click('2')">2</button>
+				<button type="button" id="button3"  onclick="myCalc_controller.number_click('3')">3</button>	
+				<br>
+				<button type="button" id="button0"  onclick="myCalc_controller.number_click('0')">0</button>
+				<button type="button" id="button_dot"  onclick="myCalc_controller.dot_click()">.</button>
+				<button type="button" id="button_equals" onclick="myCalc_controller.equals_click()">=</button>
+			</div>
+			
+			<div id="operator_buttons">
+				<button type="button" id="button_divide"  onclick="myCalc_controller.operation_click('/')">/</button><br>
+				<button type="button" id="button_multiply"  onclick="myCalc_controller.operation_click('*')">*</button><br>
+				<button type="button" id="button_subtract"  onclick="myCalc_controller.operation_click('-')">-</button><br>
+				<button type="button" id="button_add"  onclick="myCalc_controller.operation_click('+')">+</button><br>
+				<button type="button" id="negative"  onclick="myCalc_controller.negative_click()">+/-</button>
+			</div>
+		
+			<div id = "clear_buttons">
+				<button type="button" id="button_clear"  onclick="myCalc_controller.clear_click()">Clear</button>
+				<button type="button" id="button_backspace"  onclick="myCalc_controller.backspace_click()"><-</button>
+			</div>
+		
+
+	</div>
+
+		
+	<script>
+	
+	var myCalc = new Model('0', '0', 'nul');
+	var myCalc_controller = new Controller( myCalc );
+	
+	
+	//Model Object
+	function Model(register, current_value, operation) {
+		this.register = register;
+		this.current_value = current_value;
+//		this.just_updated_num = true;	
+
+
+		this.operation = operation;
+		this.just_updated_op = false;
+
+		this.number_click = number_click;
+		function number_click(num) {
+			var store;
+			if (this.just_updated_op == true) {
+				store = '';
+			} else if (this.current_value == '0') {
+				store = '';
+			} else {
+				store = this.current_value;
+			}
+			this.current_value = store + num;
+//			this.just_updated_num = true;
+			this.just_updated_op = false;
+		}
+		
+		this.dot = dot;
+		function dot() {
+			if (this.current_value == '0') {
+				this.current_value = '0.';
+			} else if (String(this.current_value).indexOf('.') != -1) {
+				return;
+			} else {
+				this.current_value = this.current_value + '.';
+			}
+		}
+		
+		this.negative = negative;
+		function negative() {
+			var store = Number(this.current_value);
+			this.current_value = store * -1;
+		}
+		
+		
+		
+		this.calculate = calculate;
+		function calculate(symbol) {
+			if (this.operation == 'nul') {
+				this.register = this.current_value;
+				this.current_value = 0;
+			} else {
+				var a = Number(this.register);
+				var b = Number(this.current_value);
+				var ans;
+				if (this.operation == '+') {
+					ans = a + b;
+				} else if ( this.operation == '-') {
+					ans = a - b;
+				} else if ( this.operation == '*') {
+					ans = a * b;
+				} else { //if (operation == '/')
+					ans = a / b;
+				}
+				this.register = ans;
+				this.current_value = 0;
+			}
+			this.operation = symbol;
+			this.just_updated_op = true;
+//			this.just_updated_num = false;
+		}
+		
+		this.equals = equals;
+		function equals() {
+			var a = Number(this.current_value);
+			var b = Number(this.register);
+			var ans;
+			if (this.operation == '+') {
+				ans = a + b;
+			} else if ( this.operation == '-') {
+				ans = a - b;
+			} else if ( this.operation == '*') {
+				ans = a * b;
+			} else { //if (operation == '/')
+				ans = a / b;
+			}	
+			this.register = ans;
+			this.current_value = ans;
+			this.operation = 'nul';
+			this.just_updated_op=true;
+//			this.just_updated_num=false;		
+		}
+		
+		this.clear = clear;
+		function clear() {
+			this.current_value = 0
+			this.register = 0;
+			this.operation = 'nul';
+//			this.just_updated_num = true;
+			this.just_updated_op = false;
+		}
+
+		this.backspace = backspace;
+		function backspace() {
+			var store = this.current_value;
+			var length = store.length
+			if (length == 1) {
+				this.current_value = 0;
+			} else {
+				this.current_value = store.substring(0, length-1);
+			}
+		}
+		
+	}
+
+	function View( model ) {
+		document.getElementById('type_space').innerHTML = model.current_value;
+		document.getElementById('answer').innerHTML = '= ' + model.register;
+	}
+
+	function Controller( model ) {
+
+		this.number_click = number_click;
+		function number_click(num) {
+			model.number_click(num);
+			View( model );
+
+		}
+		
+		
+		this.dot_click = dot_click;
+		function dot_click() {
+			model.dot();
+			View(model);
+		
+		}
+		
+		this.negative_click = negative_click;
+		function negative_click() {
+			model.negative();
+			View(model);
+		}
+		
+		
+		this.operation_click = operation_click;
+		function operation_click(symbol) {
+			model.calculate(symbol)
+			View(model);
+		}
+
+		this.equals_click = equals_click;
+		function equals_click(symbol) {
+			model.equals();
+			View(model);
+		}	
+
+		this.clear_click = clear_click;
+		function clear_click() {
+			model.clear();
+			View(model);
+		}
+
+		this.backspace_click = backspace_click;
+		function backspace_click() {
+			model.backspace();
+			View(model);
+		}
+	}
+	
+	
+	
+	
+	
+	</script>
+		
+</body>
+
+
+</html>
